@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>ME PLAYER</title>
+		<style>
+			html,
+			body {
+				display: grid;
+				justify-content: center;
+				align-items: flex-start;
+				margin: 0;
+				height: 100%;
+				background-color: #f2f2f2;
+			}
+		</style>
+		<style>
+			.me-player {
+				position: relative;
+				width: 720px;
+				height: 480px;
+				color: #fff;
+				font-size: 12px;
+				box-sizing: border-box;
+				background-color: #fff;
+			}
+
+			.me-player * {
+				margin: 0;
+				padding: 0;
+				box-sizing: inherit;
+				-webkit-appearance: none;
+			}
+
+			.mep__video {
+				width: 100%;
+				height: 100%;
+			}
+
+			.mep__bottom {
+				position: absolute;
+				bottom: 40px;
+				left: 0;
+				width: 99%;
+				margin-left: 0.5%;
+			}
+
+			.mep__progress {
+				position: relative;
+				height: 4px;
+				margin-bottom: 4px;
+				background-color: rgba(255, 255, 255, 0.5);
+			}
+
+			.mep__progress-bar {
+				position: absolute;
+				left: 0;
+				bottom: 0;
+				width: 100%;
+				height: 100%;
+				transform: scaleX(0.2);
+				transform-origin: 0 0;
+				background-color: #00beff;
+			}
+
+			.mep__controls {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				height: 30px;
+			}
+			.mep__controls-left {
+				display: flex;
+				align-items: center;
+				height: 100%;
+			}
+			.mep__controls-right {
+				height: 100%;
+			}
+			.mep-button {
+				display: inline-block;
+				width: 30px;
+				height: 100%;
+				cursor: pointer;
+				border: none;
+				outline: none;
+				opacity: 0.9;
+				background-color: transparent;
+			}
+			.mep-button:hover {
+				opacity: 1;
+			}
+			.mep-svg-fill {
+				fill: #fff;
+			}
+			.mep__time-display {
+				padding: 0 6px;
+				vertical-align: top;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="player"></div>
+		<!---->
+		<script>
+			class Events {
+				constructor() {
+					this.map = {}
+				}
+				on(name, func) {
+					if (this.map[name]) {
+						this.map[name].push(func)
+					} else {
+						this.map[name] = [func]
+					}
+					return this
+				}
+				emit(name) {
+					this.map[name].forEach(func => {
+						func()
+					})
+					return this
+				}
+				off(name) {
+					this.map[name] = null
+					return this
+				}
+			}
+			class MePlayer {
+				constructor(selector = 'me-player-container', options = {}) {
+					if (!options.source.length) {
+						console.error('必须提供视频地址')
+						return
+					}
+					this.events = new Events()
+					this.selector = selector
+					this.options = Object.assign(
+						{},
+						{
+							source: [],
+							width: 720,
+							heght: 480,
+							poster: '',
+							color: '#00beff',
+							originControls: false
+						},
+						options
+					)
+					this.init()
+				}
+				get version() {
+					return '0.1.0'
+				}
+				get volume() {}
+				init() {
+					this.render()
+					this.bindEvent()
+				}
+				getExtension(filename) {
+					return filename.slice(-3)
+				}
+				render() {
+					const player = document.createElement('div')
+					player.className = 'me-player'
+					const video = document.createElement('video')
+					video.className = 'mep__video'
+					video.poster = this.options.poster
+					video.autoplay = this.options.autoplay
+					video.controls = this.options.originControls
+					this.options.source.forEach(src => {
+						const source = document.createElement('source')
+						source.src = src
+						source.type = `video/${this.getExtension(src)}`
+						video.appendChild(source)
+					})
+					this.video = video
+					this.player = player
+					player.appendChild(video)
+					document.querySelector(this.selector).appendChild(player)
+				}
+				bindEvent() {
+					this.player.addEventListener('click', event => {
+						const target = event.target
+						if (target.classList.contains('mep__video')) {
+						}
+					})
+				}
+			}
+			const player = new MePlayer('.player', {
+				originControls: true,
+				source: ['./video/note8.mp4']
+			})
+		</script>
+	</body>
+</html>
