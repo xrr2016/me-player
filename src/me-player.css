@@ -1,0 +1,86 @@
+.mep__container {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  color: #fff;
+  font-size: 12px;
+  box-sizing: border-box;
+  border-radius: 1px;
+  background-color: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.mep__container * {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+  border: none;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.mep__video-box {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-top: 56.25%;
+}
+
+.mep__video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.mep__controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.mep__progress {
+  position: relative;
+  height: 4px;
+  margin-bottom: 4px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.mep__progress-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0.2);
+  transform-origin: 0 0;
+  background-color: #00beff;
+}
+
+.mep-button {
+  display: inline-block;
+  width: 34px;
+  height: 100%;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  opacity: 0.9;
+  background-color: transparent;
+}
+.mep-button:hover {
+  opacity: 1;
+}
+.mep-svg-fill {
+  fill: #fff;
+}
+.mep__time-display {
+  padding: 0 6px;
+  vertical-align: top;
+}
