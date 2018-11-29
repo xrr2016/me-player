@@ -1,6 +1,8 @@
 class Events {
 	constructor() {
-		this.map = {}
+		this.map = {
+			aaa: "aaa"
+		}
 	}
 	on(name, func) {
 		if (this.map[name]) {
@@ -30,9 +32,7 @@ class MePlayer {
 		}
 		this.events = new Events()
 		this.selector = selector
-		this.options = Object.assign(
-			{},
-			{
+		this.options = Object.assign({}, {
 				source: [],
 				width: 720,
 				height: 480,
@@ -75,8 +75,7 @@ class MePlayer {
 	bindEvent() {
 		this.player.addEventListener('click', event => {
 			const target = event.target
-			if (target.classList.contains('mep__video')) {
-			}
+			if (target.classList.contains('mep__video')) {}
 		})
 	}
 }
