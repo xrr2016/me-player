@@ -6,6 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 	<title>ME PLAYER</title>
+	<link rel="stylesheet" href="./src/style.css">
 	<link rel="stylesheet" href="./src/me-player.css" />
 	<style>
 		html, body {
@@ -29,32 +30,25 @@
 			</video>
 		</div>
 		<div class="mep__controls">
-			<button class="mep__button mep__play-button">
-				<svg class="mep__svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
-					<path class="mep-svg-fill" d="M17.982 9.275L8.06 3.27A2.013 2.013 0 0 0 5 4.994v12.011a2.017 2.017 0 0 0 3.06 1.725l9.922-6.005a2.017 2.017 0 0 0 0-3.45z" />
-				</svg>
-				<svg class="mep__svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
-					<path class="mep-svg-fill" d="M7 3a2 2 0 0 0-2 2v12a2 2 0 1 0 4 0V5a2 2 0 0 0-2-2zM15 3a2 2 0 0 0-2 2v12a2 2 0 1 0 4 0V5a2 2 0 0 0-2-2z"></path>
-				</svg>
-			</button>
+			<button class="mep__button mep__play-button icon-play3"></button>
 			<div class="mep__progress">
 				<div class="mep__progress-bar"></div>
+				<div class="mep__progress-mask"></div>
 			</div>
 			<div class="mep__time-display">
 				<span class="mep__time-current">00:00</span>
 				<span class="mep__time-divider">/</span>
 				<span class="mep__time-total">00:00</span>
 			</div>
-			<button class="mep__button mep__mute-button">
-				<svg class="mep__svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
-					<path class="mep-svg-fill" d="M10.188 4.65L6 8H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1l4.188 3.35a.5.5 0 0 0 .812-.39V5.04a.498.498 0 0 0-.812-.39zm4.258-.872a1 1 0 0 0-.862 1.804 6.002 6.002 0 0 1-.007 10.838 1 1 0 0 0 .86 1.806A8.001 8.001 0 0 0 19 11a8.001 8.001 0 0 0-4.554-7.222z" />
-					<path class="mep-svg-fill" d="M15 11a3.998 3.998 0 0 0-2-3.465v6.93A3.998 3.998 0 0 0 15 11z" /></svg>
+			<button class="mep__button mep__mute-button icon-volume-high">
+				<span class="mep__volume-container">
+					<span class="mep__volume-num">100</span>
+					<span class="mep__volume">
+						<span class="mep__volume-bar"></span>
+					</span>
+				</span>
 			</button>
-			<button class="mep__button mep__fullscreen-button">
-				<svg class="mep__svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
-					<path class="mep-svg-fill" d="M9 3H4a1 1 0 0 0-1 1v5a1 1 0 0 0 2 0V5h4a1 1 0 0 0 0-2zM18 12a1 1 0 0 0-1 1v4h-4a1 1 0 0 0 0 2h5a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1z"></path>
-				</svg>
-			</button>
+			<button class="mep__button mep__fullscreen-button icon-fullscreen"></button>
 		</div>
 	</div>
 
@@ -66,8 +60,18 @@
 		const player = $(".mep__container")
 		const video = player.querySelector("video.mep__video")
 		const progress = player.querySelector('.mep__progress-bar')
+		const videoProgress = player.querySelector(".mep__progress")
+		const videoProgressMask = player.querySelector(".mep__progress-mask")
 		const totalTimeText = player.querySelector('.mep__time-total')
 		const currentTimeText = player.querySelector('.mep__time-current')
+		const playButton = player.querySelector(".mep__play-button")
+		const muteButton = player.querySelector(".mep__mute-button")
+		const fullscreenButton = player.querySelector(".mep__fullscreen-button")
+
+		const vedioVolume = player.querySelector(".mep__volume")
+
+		let isVideoFullscreen = false
+		let isMouseDown = false
 
 		const ONE_MINUTE = 60
 
@@ -86,32 +90,121 @@
 		function toggleVideoPlay() {
 			if (video.paused) {
 				video.play()
-				player.classList.toggle("is-playing")
+				player.classList.add("is-playing")
+				playButton.classList.remove("icon-play3")
+				playButton.classList.add("icon-pause2")
 			} else {
 				video.pause()
-				player.classList.toggle("is-playing")
+				player.classList.remove("is-playing")
+				playButton.classList.remove("icon-pause2")
+				playButton.classList.add("icon-play3")
 			}
 		}
 
-		function getButtonByClass(node, className) {
-			if (node.classList.contains(className)) {
-				return node
+		function toggleVideoMute() {
+			if (video.volume) {
+				video.volume = 0
+				muteButton.classList.remove("icon-volume-high")
+				muteButton.classList.add("icon-volume-mute2")
 			} else {
-				if (node.parentElement) {
-					return getButtonByClass(node.parentElement, className)
-				} else {
-					return null
-				}
+				video.volume = 1
+				muteButton.classList.remove("icon-volume-mute2")
+				muteButton.classList.add("icon-volume-high")
 			}
 		}
+
+		function requestFullscreen() {
+			if (player.requestFullscreen) {
+				player.requestFullscreen();
+			} else if (player.msRequestFullscreen) {
+				player.msRequestFullscreen();
+			} else if (player.mozRequestFullScreen) {
+				player.mozRequestFullScreen();
+			} else if (player.webkitRequestFullscreen) {
+				player.webkitRequestFullscreen();
+			}
+		}
+
+		function exitFullscreen() {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.msExitFullscreen) {
+				document.msExitFullscreen();
+			} else if (document.mozExitFullscreen) {
+				document.mozExitFullscreen();
+			} else if (document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
+			}
+		}
+
+		function toggleVideoFullscreen() {
+			if (isVideoFullscreen) {
+				exitFullscreen()
+				isVideoFullscreen = false
+				fullscreenButton.classList.remove("icon-fullscreen-exit")
+				fullscreenButton.classList.add("icon-fullscreen")
+			} else {
+				requestFullscreen()
+				isVideoFullscreen = true
+				fullscreenButton.classList.remove("icon-fullscreen")
+				fullscreenButton.classList.add("icon-fullscreen-exit")
+			}
+		}
+
+		const maskWidth = parseInt(window.getComputedStyle(videoProgressMask).width)
+
+		function changeVideoProgress(event) {
+			const {
+				offsetX
+			} = event
+			const persent = offsetX / maskWidth
+			video.currentTime = video.duration * persent
+			progress.style.transform = `scaleX(${persent})`
+			currentTimeText.textContent = timeToString(video.currentTime)
+		}
+		// function getButtonByClass(node, className) {
+		// 	if (node.classList.contains(className)) {
+		// 		return node
+		// 	} else {
+		// 		if (node.parentElement) {
+		// 			return getButtonByClass(node.parentElement, className)
+		// 		} else {
+		// 			return null
+		// 		}
+		// 	}
+		// }
 
 		player.addEventListener("click", event => {
 			const target = event.target
-			const playBtn = getButtonByClass(target, "mep__play-button")
-			if (playBtn) {
-				toggleVideoPlay()
+
+			// console.log('target :', target);
+
+			switch (target) {
+				case playButton:
+					toggleVideoPlay()
+					break
+				case muteButton:
+					toggleVideoMute()
+					break
+				case fullscreenButton:
+					toggleVideoFullscreen()
+					break
+				case videoProgressMask:
+					changeVideoProgress(event)
+					break
 			}
 		}, false)
+
+		player.onfullscreenchange = function (event) {
+			const isFullscreen = document.fullscreenElement
+			if (isFullscreen) {
+				fullscreenButton.classList.remove("icon-fullscreen")
+				fullscreenButton.classList.add("icon-fullscreen-exit")
+			} else {
+				fullscreenButton.classList.remove("icon-fullscreen-exit")
+				fullscreenButton.classList.add("icon-fullscreen")
+			}
+		}
 
 		video.addEventListener("loadedmetadata", event => {
 			const {
@@ -129,6 +222,46 @@
 
 			progress.style.transform = `scaleX(${scaleX})`
 			currentTimeText.textContent = timeToString(currentTime)
+		})
+
+		videoProgressMask.addEventListener("mousedown", event => {
+			isMouseDown = true
+		})
+
+		videoProgressMask.addEventListener("mousemove", event => {
+			const {
+				offsetX
+			} = event
+			const persent = offsetX / maskWidth
+		})
+
+		videoProgressMask.addEventListener("mouseup", event => {
+			isMouseDown = false
+		})
+
+		video.addEventListener("contextmenu", event => {
+			console.log('event :', event);
+			event.preventDefault()
+		})
+
+
+		let isMouseDownVolume = false
+		const volumeHeight = parseInt(window.getComputedStyle(vedioVolume).height)
+
+		vedioVolume.addEventListener("mousedown", event => {
+			isMouseDownVolume = true
+		})
+		vedioVolume.addEventListener("mousemove", event => {
+			if (isMouseDownVolume) {
+				const {
+					offsetY
+				} = event
+				const persent = offsetY / volumeHeight
+				console.log('persent :', persent)
+			}
+		})
+		vedioVolume.addEventListener("mouseup", event => {
+			isMouseDownVolume = false
 		})
 
 	</script>
