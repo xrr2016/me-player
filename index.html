@@ -11,8 +11,9 @@
 			html,
 			body {
 				display: flex;
+				flex-flow: column wrap;
 				justify-content: center;
-				align-items: flex-start;
+				align-items: center;
 				width: 100%;
 				height: 100%;
 				margin: 0;
@@ -227,8 +228,22 @@
 				}
 			}
 
+			const rect = window.getComputedStyle(player)
+
 			video.addEventListener('loadedmetadata', event => {
 				const { duration } = video
+				// const canvas = document.createElement('canvas')
+				// const ctx = canvas.getContext('2d')
+				// canvas.width = parseInt(rect.width)
+				// canvas.height = parseInt(rect.height)
+				// ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+				// const url = canvas.toDataURL('image/jpeg', 0.1)
+				// const img = document.createElement('img')
+				// img.onload = function() {
+				// 	document.body.appendChild(img)
+				// }
+				// img.src = url
 				totalTimeText.textContent = timeToString(duration)
 			})
 
@@ -318,6 +333,38 @@
 						break
 				}
 			})
+		</script>
+		<script>
+			const data = {
+				volume: 1,
+				isMuted: false,
+				isPlaying: false,
+				isFullscreen: false,
+				currentTime: '00:00',
+				totalTime: '00:00',
+				video: video
+			}
+			const handler = {
+				get(target, prop) {
+					return target[prop] || 'Not Found!'
+				},
+				set(target, prop, val) {
+					console.log('prop: ', prop)
+					if (prop === 'volume' && val >= 0 && val <= 1) {
+						video.volume = val
+						target[prop] = val
+					}
+
+					if (prop === 'isPlaying') {
+						if (val) {
+							video.play()
+						} else {
+							video.pause()
+						}
+					}
+				}
+			}
+			const p = new Proxy(data, handler)
 		</script>
 	</body>
 </html>
